@@ -48,9 +48,8 @@ function ProductCard(props) {
                     </Button>}
                     {props.bought && <div className='d-flex justify-content-between'>
                         <Box className='d-flex justify-content-center align-items-center' style={{ userSelect: 'none', border: 'solid 1px rgb(50, 50, 50)', borderRadius: '4px', width: '3em', height: '2em' }}>{props.quantity}</Box>
+                        {props.quantity!==1 && <Box onClick={props.onRemoveItem} className='d-flex justify-content-center align-items-center' sx={{ fontWeight: '500', userSelect: 'none', cursor: 'pointer', borderRadius: '4px', color: 'black', border: 'solid 1px rgb(50,50,50)', width: '3em', height: '2em', transition: '200ms', '&:hover': { backgroundColor: 'rgb(240, 240, 240)' } }}>-</Box>}
                         <Box onClick={props.onAddItem} className='d-flex justify-content-center align-items-center mx-2' sx={{ fontWeight: '500', userSelect: 'none', cursor: 'pointer', borderRadius: '4px', color: 'white', backgroundColor: 'rgb(50,50,50)', width: '3em', height: '2em', transition: '200ms', '&:hover': { backgroundColor: 'rgb(20, 20, 20)' } }}>+</Box>
-                        {props.quantity!==1 && <Box onClick={props.onRemoveItem} className='d-flex justify-content-center align-items-center' sx={{ fontWeight: '500', userSelect: 'none', cursor: 'pointer', borderRadius: '4px', color: 'white', backgroundColor: 'rgb(230,50,50)', width: '3em', height: '2em', transition: '200ms', '&:hover': { backgroundColor: 'rgb(250, 20, 20)' } }}>-</Box>
-                        }
                     </div>}
                 </div>
             </div>

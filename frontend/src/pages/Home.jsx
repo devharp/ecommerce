@@ -9,21 +9,39 @@ function Home() {
 
     const [cartitems, setCartItems] = useState([]);
 
-    async function handleCartItems(items){
-        console.log(items);
-        setCartItems(items);
+    async function handleCartItems(items) {
+        const payload = JSON.stringify(items);
+
+        const res = await fetch('http://localhost:3000/cart', {
+            method: 'POST', 
+            body: payload,
+            headers: {
+                'Accept': 'text/plain',
+                'Content-Type': 'text/plain'
+            }
+        });
+        if(res.status === 200){
+            fetchCartItems();
+        }
     }
-    
+
+    async function fetchCartItems(){
+        const res = await fetch('http://localhost:3000/cart');
+        const payload = await res.json();
+        setCartItems(payload);
+    }
+
     useEffect(() => {
         if (!once) {
             fetchProducts(null);
+            fetchCartItems()
             once = true;
         }
 
     }, []);
     async function fetchProducts(query) {
         let link = 'http://localhost:3000/products';
-        if(query !== null){
+        if (query !== null) {
             link += `?search=${query}`
         }
         const res = await fetch(link);
@@ -40,27 +58,39 @@ function Home() {
         fetchProducts(query)
     }
 
-    function onAddCartClicked(pid){
+    function onAddCartClicked(pid) {
         let found = false;
         for (const e of cartitems) {
-            if(e === pid){
+            if (e === pid) {
                 found = true;
                 break;
             }
         }
-        if(!found){
+        if (!found) {
             handleCartItems([...cartitems, pid]);
         }
     }
 
-    function removeFromCart(pid){
+    async function removeFromCart(pid) {
         let temp = [];
         for (const e of cartitems) {
-            if(e.pid !== pid){
+            if (e.pid !== pid) {
                 temp.push(e);
             }
         }
-        handleCartItems(temp);
+        // handleCartItems(temp);
+        const res = await fetch('http://localhost:3000/cart', {
+            method: 'POST', 
+            body: JSON.stringify({pid, type: 'DELETE'}),
+            headers: {
+                'Accept': 'text/plain',
+                'Content-Type': 'text/plain'
+            }
+        });
+        if(res.status === 200){
+            fetchCartItems();
+        }
+
     }
 
     return (
@@ -74,29 +104,29 @@ function Home() {
                         let bought = false;
                         let quantity = 0;
                         for (const f of cartitems) {
-                            if(f.pid === e.pid){ bought = true; quantity = f.quantity}
+                            if (f.pid === e.pid) { bought = true; quantity = f.quantity }
                         }
 
-                        function onAddItem(){
+                        function onAddItem() {
                             let temp = []
                             for (const f of cartitems) {
-                                if(f.pid === e.pid){
-                                    temp.push({ pid: f.pid, quantity: f.quantity+1 })
+                                if (f.pid === e.pid) {
+                                    temp.push({ pid: f.pid, quantity: f.quantity + 1 })
                                 }
-                                else{
+                                else {
                                     temp.push(f);
                                 }
                             }
                             handleCartItems(temp);
                         }
 
-                        function onRemoveItem(){
+                        function onRemoveItem() {
                             let temp = []
                             for (const f of cartitems) {
-                                if(f.pid === e.pid){
-                                    temp.push({ pid: f.pid, quantity: f.quantity-1 })
+                                if (f.pid === e.pid) {
+                                    temp.push({ pid: f.pid, quantity: f.quantity - 1 })
                                 }
-                                else{
+                                else {
                                     temp.push(f);
                                 }
                             }
@@ -105,7 +135,7 @@ function Home() {
 
                         return (
 
-                            <ProductCard onAddItem={onAddItem} onRemoveItem={onRemoveItem} quantity={quantity} bought={bought} removeFromCart={() => {removeFromCart(e.pid)}} onAddCartClicked={() => {onAddCartClicked({pid: e.pid, quantity: 1})}} key={'sdfdsf' + i} image={e.image} category={e.category} title={e.title} price={'$' + e.price} ratings={e.rating} />
+                            <ProductCard onAddItem={onAddItem} onRemoveItem={onRemoveItem} quantity={quantity} bought={bought} removeFromCart={() => { removeFromCart(e.pid) }} onAddCartClicked={() => { onAddCartClicked({ pid: e.pid, quantity: 1 }) }} key={'sdfdsf' + i} image={e.image} category={e.category} title={e.title} price={'$' + e.price} ratings={e.rating} />
                         )
                     })
                 }

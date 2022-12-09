@@ -6,6 +6,7 @@ const express = require('express');
 const app = express();
 
 app.use(cors());
+app.use(express.text());
 
 function otherFunc(){
     function createTable(){
@@ -82,6 +83,48 @@ function getCartData(){
     });
 }
 
+
+function setCartData(payload){
+    const pid = payload.pid;
+    const quantity = payload.quantity;
+    return new Promise((resolve, reject) => {
+        db.all(`SELECT pid from cart where pid='${pid}'`, (err, rows) => {
+            if(err) return reject(err)
+            console.log('from db: ', rows);
+            
+            // IF no PID
+            if(rows.length === 0){
+                // INSERT QUERY
+                console.log('Adding a new product to the cart');
+                db.exec(`INSERT INTO cart VALUES('${pid}', '${quantity}')`, (err) => {
+                    if(err) return reject(err);
+                    return resolve(true);
+                });
+
+            }
+            
+            // UPDATE QUERY
+            console.log('Updating the cart list by changing the quantity');
+            db.exec(`UPDATE cart set quantity='${quantity}' where pid='${pid}'`, (err) => {
+                if(err) return reject(err);
+                resolve(true);
+            });
+        });
+    });
+
+    // console.log(payload);
+}
+
+function deleteCartData(pid){
+    return new Promise((resolve, reject) => {
+        db.exec(`DELETE from cart where pid='${pid}'`, (err) => {
+            if(err) return reject(err);
+            resolve(true);
+        });
+    });
+    // console.log('requesting to delete the entry: ', pid);
+}
+
 app.get('/', async (req, res) => {
     res.send('Hello World!');
 });
@@ -147,8 +190,8 @@ app.get('/cart', async (req, res) => {
     try{
 
         const cartitems = await getCartData();
-        console.log(cartitems);
-        res.sendStatus(501);
+        res.send(cartitems);
+        // res.sendStatus(501);
     }
     catch(err){
         console.log(err);
@@ -159,6 +202,19 @@ app.get('/cart', async (req, res) => {
 app.post('/cart', async (req, res) => {
     try{
         const payload = JSON.parse(req.body);
+        // console.log({payload});
+        if(payload.type === 'DELETE'){
+            const dbres = await deleteCartData(payload.pid);
+            if(dbres === true){
+                return res.sendStatus(200);
+            }
+        }
+        else{
+            for(const e of payload){
+                await setCartData(e);
+            }
+            return res.sendStatus(200);
+        }
         res.sendStatus(501);
     }catch(err){
         console.log(err);
