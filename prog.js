@@ -62,7 +62,7 @@ function otherFunc(){
     }
 }
 
-
+// Get Products List
 function getData(){
     return new Promise((resolve, reject) => {
         db.all('SELECT * from products', (err, rows) => {
@@ -70,6 +70,16 @@ function getData(){
             resolve(rows);
         })
     })
+}
+
+// Get products list from cart
+function getCartData(){
+    return new Promise((resolve, reject) => {
+        db.all('SELECT * from cart', (err, rows) => {
+            if(err) return reject(err);
+            resolve(rows);
+        })
+    });
 }
 
 app.get('/', async (req, res) => {
@@ -131,6 +141,29 @@ app.get('/products', async (req, res) => {
         }
     }
     res.send(temprows)
+});
+
+app.get('/cart', async (req, res) => {
+    try{
+
+        const cartitems = await getCartData();
+        console.log(cartitems);
+        res.sendStatus(501);
+    }
+    catch(err){
+        console.log(err);
+        res.sendStatus(503);
+    }
+});
+
+app.post('/cart', async (req, res) => {
+    try{
+        const payload = JSON.parse(req.body);
+        res.sendStatus(501);
+    }catch(err){
+        console.log(err);
+        res.sendStatus(501);
+    }
 });
 
 function main(){

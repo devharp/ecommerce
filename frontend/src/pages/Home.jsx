@@ -8,6 +8,11 @@ function Home() {
     const [products, setProducts] = useState([]);
 
     const [cartitems, setCartItems] = useState([]);
+
+    async function handleCartItems(items){
+        console.log(items);
+        setCartItems(items);
+    }
     
     useEffect(() => {
         if (!once) {
@@ -44,19 +49,18 @@ function Home() {
             }
         }
         if(!found){
-            setCartItems([...cartitems, pid]);
+            handleCartItems([...cartitems, pid]);
         }
     }
 
     function removeFromCart(pid){
         let temp = [];
         for (const e of cartitems) {
-            if(e !== pid){
+            if(e.pid !== pid){
                 temp.push(e);
             }
         }
-        setCartItems(temp);
-        console.log(pid);
+        handleCartItems(temp);
     }
 
     return (
@@ -67,9 +71,41 @@ function Home() {
                 {/* <ProductCard category='mens shopping' title='Product Name' price='$349.99' ratings={{ rate: 3.9, count: 120 }} /> */}
                 {
                     products.map((e, i) => {
+                        let bought = false;
+                        let quantity = 0;
+                        for (const f of cartitems) {
+                            if(f.pid === e.pid){ bought = true; quantity = f.quantity}
+                        }
+
+                        function onAddItem(){
+                            let temp = []
+                            for (const f of cartitems) {
+                                if(f.pid === e.pid){
+                                    temp.push({ pid: f.pid, quantity: f.quantity+1 })
+                                }
+                                else{
+                                    temp.push(f);
+                                }
+                            }
+                            handleCartItems(temp);
+                        }
+
+                        function onRemoveItem(){
+                            let temp = []
+                            for (const f of cartitems) {
+                                if(f.pid === e.pid){
+                                    temp.push({ pid: f.pid, quantity: f.quantity-1 })
+                                }
+                                else{
+                                    temp.push(f);
+                                }
+                            }
+                            handleCartItems(temp);
+                        }
+
                         return (
 
-                            <ProductCard bought={cartitems.includes(e.pid)} removeFromCart={() => {removeFromCart(e.pid)}} onAddCartClicked={() => {onAddCartClicked(e.pid)}} key={'sdfdsf' + i} image={e.image} category={e.category} title={e.title} price={'$' + e.price} ratings={e.rating} />
+                            <ProductCard onAddItem={onAddItem} onRemoveItem={onRemoveItem} quantity={quantity} bought={bought} removeFromCart={() => {removeFromCart(e.pid)}} onAddCartClicked={() => {onAddCartClicked({pid: e.pid, quantity: 1})}} key={'sdfdsf' + i} image={e.image} category={e.category} title={e.title} price={'$' + e.price} ratings={e.rating} />
                         )
                     })
                 }
