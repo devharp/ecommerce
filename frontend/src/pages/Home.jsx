@@ -3,6 +3,8 @@ import NavBar from "../components/NavBar";
 import ProductCard from "../components/ProductCard";
 
 function Home() {
+    // Host link to be changed later
+    const host = 'https://3f8a-144-48-178-172.in.ngrok.io'
     let once = false;
     const [searchtext, setSearchText] = useState('');
     const [products, setProducts] = useState([]);
@@ -12,7 +14,7 @@ function Home() {
     async function handleCartItems(items) {
         const payload = JSON.stringify(items);
 
-        const res = await fetch('http://localhost:3000/cart', {
+        const res = await fetch(`${host}/cart`, {
             method: 'POST', 
             body: payload,
             headers: {
@@ -26,7 +28,7 @@ function Home() {
     }
 
     async function fetchCartItems(){
-        const res = await fetch('http://localhost:3000/cart');
+        const res = await fetch(`${host}/cart`);
         const payload = await res.json();
         setCartItems(payload);
     }
@@ -40,7 +42,7 @@ function Home() {
 
     }, []);
     async function fetchProducts(query) {
-        let link = 'http://localhost:3000/products';
+        let link = `${host}/products`;
         if (query !== null) {
             link += `?search=${query}`
         }
@@ -79,7 +81,7 @@ function Home() {
             }
         }
         // handleCartItems(temp);
-        const res = await fetch('http://localhost:3000/cart', {
+        const res = await fetch(`${host}/cart`, {
             method: 'POST', 
             body: JSON.stringify({pid, type: 'DELETE'}),
             headers: {
