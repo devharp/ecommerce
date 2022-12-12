@@ -153,8 +153,8 @@ function Cart(props) {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />}
             </Paper>
-            <Box className='d-flex justify-content-around my-5'>
-                <h4><span>Total: </span><span style={{ color: 'green' }}>${total}</span></h4>
+            <Box className='d-flex flex-column flex-md-row justify-content-around my-5'>
+                <h4 className='my-2 d-flex justify-content-center'><span>Total: </span><span style={{ color: 'green' }}>&nbsp;${total}</span></h4>
                 <BottomButtons emptyCart={emptyCart} />
             </Box>
         </>
@@ -181,9 +181,9 @@ function CartRowDeleteButton(props){
 function BottomButtons(props){
     return(
     <>
-        <Button onClick={props.emptyCart} size='medium' variant='outlined' sx={{ bgcolor: 'rgb(50,50,50)', color: 'white', borderColor: 'white', '&:hover': { borderColor: 'rgb(50,50,50)', color: 'rgb(50, 50, 50)', bgcolor: 'white'  } }}>Empty Cart</Button>
-        <Button size='medium' variant='contained'>Checkout</Button>
-        <Link to='/'><Button size='medium' variant='contained'>Add More</Button></Link>
+        <Button className='my-2' onClick={props.emptyCart} size='medium' variant='outlined' sx={{ bgcolor: 'rgb(50,50,50)', color: 'white', borderColor: 'white', '&:hover': { borderColor: 'rgb(50,50,50)', color: 'rgb(50, 50, 50)', bgcolor: 'white'  } }}>Empty Cart</Button>
+        <Button className='my-2' size='medium' variant='contained'>Checkout</Button>
+        <Link className='d-flex' to='/'><Button className='my-2 flex-grow-1' size='medium' variant='contained'>Add More</Button></Link>
     </>
     )
 }
