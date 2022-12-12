@@ -16,6 +16,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import MoreIcon from '@mui/icons-material/MoreVert';
+import { Link } from 'react-router-dom';
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -121,14 +122,16 @@ export default function NavBar(props) {
       open={isMobileMenuOpen}
       onClose={handleMobileMenuClose}
     >
-      <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={props.cartitems} color="error">
-            <ShoppingCartIcon />
-          </Badge>
-        </IconButton>
-        <p>Messages</p>
-      </MenuItem>
+      <Link to='/cart' style={{ color: 'black', textDecoration: 'none' }}>
+        <MenuItem>
+          <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+            <Badge badgeContent={props.cartitems} color="error">
+              <ShoppingCartIcon />
+            </Badge>
+          </IconButton>
+          <p className='m-0'>Cart</p>
+        </MenuItem>
+      </Link>
       {/* <MenuItem>
           <IconButton
             size="large"
@@ -151,7 +154,7 @@ export default function NavBar(props) {
         >
           <AccountCircle />
         </IconButton>
-        <p>Profile</p>
+        <p className='m-0'>Profile</p>
       </MenuItem>
     </Menu>
   );
@@ -190,11 +193,11 @@ export default function NavBar(props) {
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={props.cartitems} color="error">
-                {/* <MailIcon /> */}
-                <ShoppingCartIcon />
-
-              </Badge>
+              <Link to='/cart'>
+                <Badge style={{ color: 'white' }} badgeContent={props.cartitems} color="error">
+                  <ShoppingCartIcon />
+                </Badge>
+              </Link>
             </IconButton>
             {/* <IconButton
                 size="large"
