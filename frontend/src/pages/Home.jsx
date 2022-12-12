@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import NavBar from "../components/NavBar";
 import ProductCard from "../components/ProductCard";
 
-function Home() {
+function Home(props) {
     // Host link to be changed later
-    const host = 'https://3f8a-144-48-178-172.in.ngrok.io'
+    const host = props.host
     let once = false;
     const [searchtext, setSearchText] = useState('');
     const [products, setProducts] = useState([]);
