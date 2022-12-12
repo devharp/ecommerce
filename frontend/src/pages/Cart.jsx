@@ -24,7 +24,7 @@ function Cart(props) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [rows, setRows] = React.useState([]);
-    let total = 0;
+    const [total, setTotal] = React.useState(0);
 
 
     const handleChangePage = (event, newPage) => {
@@ -40,12 +40,16 @@ function Cart(props) {
         const res = await fetch(`${host}/cart`);
         const payload = await res.json();
         let temp = [];
+        let temptotal = 0;
         for (let i = 0; i < payload.length; i++) {
             const e = payload[i];
             const res = await fetch(`${host}/products?pid=${e.pid}`);
             const prod = await res.json();
             temp.push({ srno: i + 1, title: prod[0].title, image: <CartRowImage src={prod[0].image} />, edit: <CartRowDeleteButton onClick={() => removeFromCart(e.pid)} />, quantity: e.quantity, price: `$${prod[0].price}` },);
+            // setTotal(total + prod[0].price);
+            temptotal += (prod[0].price * e.quantity);
         }
+        setTotal(temptotal);
         setRows(temp);
     }
 
@@ -64,6 +68,26 @@ function Cart(props) {
         if(res.status === 200){
             fetchCartRows();
         }
+    }
+
+    async function emptyCart(){
+        const res = await fetch(`${host}/cart`);
+        const payload = await res.json();
+
+        for (const e of payload) {
+            
+            await fetch(`${host}/cart`, {
+                method: 'POST', 
+                body: JSON.stringify({pid: e.pid, type: 'DELETE'}),
+                headers: {
+                    'Accept': 'text/plain',
+                    'Content-Type': 'text/plain'
+                }
+            });
+        }
+
+        fetchCartRows();
+
     }
 
     async function init() {
@@ -131,7 +155,7 @@ function Cart(props) {
             </Paper>
             <Box className='d-flex justify-content-around my-5'>
                 <h4><span>Total: </span><span style={{ color: 'green' }}>${total}</span></h4>
-                <BottomButtons/>
+                <BottomButtons emptyCart={emptyCart} />
             </Box>
         </>
 
@@ -157,7 +181,7 @@ function CartRowDeleteButton(props){
 function BottomButtons(props){
     return(
     <>
-        <Button size='medium' variant='outlined' sx={{ bgcolor: 'rgb(50,50,50)', color: 'white', borderColor: 'white', '&:hover': { borderColor: 'rgb(50,50,50)', color: 'rgb(50, 50, 50)', bgcolor: 'white'  } }}>Empty Cart</Button>
+        <Button onClick={props.emptyCart} size='medium' variant='outlined' sx={{ bgcolor: 'rgb(50,50,50)', color: 'white', borderColor: 'white', '&:hover': { borderColor: 'rgb(50,50,50)', color: 'rgb(50, 50, 50)', bgcolor: 'white'  } }}>Empty Cart</Button>
         <Button size='medium' variant='contained'>Checkout</Button>
         <Link to='/'><Button size='medium' variant='contained'>Add More</Button></Link>
     </>
